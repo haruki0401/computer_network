@@ -1,16 +1,20 @@
 import java.util.Scanner;
 
 class CRC{
-	int key[]=new int[32];
-	int sData[]=new int[42];
+	public static final int kl=32;
+	public static final int sl=20;
+
+	int key[]=new int[kl];
+	int sData[]=new int[kl+sl];
 	int rData[];
 	//int flag3;
-	int digit;
+	int pos1;
+	int pos2;
 
 	Scanner scan2=new Scanner(System.in);
 
 	CRC() {
-		for(int i=0;i<32;i++) {
+		for(int i=0;i<kl;i++) {
 			key[i]=0;
 		}
 	}
@@ -28,7 +32,7 @@ class CRC{
 			key[20]=1;
 			key[15]=1;
 
-			digit=16;
+			pos1=15;
 		}else {
 			System.out.println("生成多項式を作成します。(最高次数31)");
 			System.out.println("多項式を入力する際は、２進数ビット列とみなしてください（例： \"x^2+1\"の場合は\"101\"）");
@@ -47,23 +51,29 @@ class CRC{
                 	}
                 }
 
-            }while((str.length()==0)||(str.length()>32)||(error==1));
+            }while((str.length()==0)||(str.length()>kl)||(error==1));
 
             //int length=chararray.length;
 
             for(int i=0;i<chararray.length;i++) {
             	if(chararray[i]=='1') {
-            		key[32-chararray.length+i]=1;
+            		key[kl-chararray.length+i]=1;
             	}
             }
 
-            digit=chararray.length-1;
+            for(int i=0;i<kl;i++) {
+            	if(key[i]==1) {
+            		pos1=i;
+            		break;
+            	}
+            }
 
 		}
 
-		for(int j=0;j<32;j++) {
+		for(int j=0;j<kl;j++) {
 			System.out.printf(""+key[j]);
 		}
+
 		System.out.println();
 
 	}
@@ -73,14 +83,16 @@ class CRC{
 		char []chararray=null;
 		int error=0;
 
+		int []r=new int[kl+1];
+
 
 		if(flag1==1){
 
-			for(int i=0;i<42;i++) {
+			for(int i=0;i<(kl+sl);i++) {
 				sData[i]=0;
 			}
 
-			System.out.println("送信データを入力します。(最高ビット数10)");
+			System.out.println("送信データを入力します。(最高ビット数20)");
 
             do{
             	System.out.println("値を入力してください。(値が正しくない場合は再度表示されます。)");
@@ -95,22 +107,81 @@ class CRC{
                 	}
                 }
 
-            }while((str.length()==0)||(str.length()>10)||(error==1));
+            }while((str.length()==0)||(str.length()>sl)||(error==1));
 
             for(int i=0;i<chararray.length;i++) {
             	if(chararray[i]=='1') {
-            		sData[42-digit-chararray.length+i]=1;
+            		sData[sl+pos1+1-chararray.length+i]=1;
             	}
             }
 
 
-    		for(int j=0;j<42;j++) {
+    		for(int j=0;j<(kl+sl);j++) {
     			System.out.printf(""+sData[j]);
     		}
     		System.out.println();
 
-    		//計算
+            for(int i=0;i<(kl+sl);i++) {
+            	if(sData[i]==1) {
+            		pos2=i;
+            		break;
+            	}
+            }
 
+
+
+    		//計算
+    		//r=key;
+
+    		int digit=kl-pos1;
+    		int pos3=kl;
+
+    		while(pos2+digit-(kl-pos3)<=(kl+sl)) {
+    			for(int i=0;i<digit;i++) {
+    				if((kl-pos3)>0) {
+    					r[pos1]=key[pos1]^r[pos3];
+    					pos1++;
+    					pos3++;
+    				}else {
+    					r[pos1]=key[pos1]^sData[pos2];
+    					pos1++;
+    					pos2++;
+    				}
+    			}
+
+
+    			pos1=kl-digit;
+    			pos3=kl;
+    			for(int i=0;i<digit;i++) {
+    				if(r[pos1+i]==1) {
+    					pos3=pos1+i;
+    					break;
+    				}
+    			}
+
+
+    			/*for(int j=0;j<kl;j++) {
+        			System.out.printf(""+r[j]);
+        		}
+        		System.out.println();*/
+
+    		}
+
+
+    		if(pos2!=(kl+sl)) {
+    			sData[(kl+sl)-digit+1]=r[kl-1];
+    		}else {
+    			for(int i=0;i<digit-1;i++) {
+        			sData[(kl+sl)-digit+i+1]=r[kl-digit+i+1];
+        		}
+    		}
+
+
+
+    		for(int j=0;j<(kl+sl);j++) {
+    			System.out.printf(""+sData[j]);
+    		}
+    		System.out.println();
 
 
 		}else{
@@ -159,17 +230,9 @@ public class prog1 {
 		obj.createKey(flag2);
 		obj.calculate(flag1);
 
-		/*for(int j=31;j>=0;j--) {
-		System.out.printf(""+key[j]);
-		}*/
-
-
 		if(flag1==1) {
 
 		}
-
-
-
 
 		scan1.close();
 	}
