@@ -2,9 +2,9 @@ import java.util.Scanner;
 
 class CRC{
 	int key[]=new int[32];
-	long data;
-
-	int flag3;
+	int sData[]=new int[42];
+	int rData[];
+	//int flag3;
 	int digit;
 
 	Scanner scan2=new Scanner(System.in);
@@ -17,37 +17,51 @@ class CRC{
 
 
 	public void createKey(int flag2) {
+		String str;
+		char []chararray=null;
+		int error=0;
+
 		if(flag2==1) {
-			key[0]=1;
-			key[1]=1;
-			key[4]=1;
-			key[11]=1;
-			key[16]=1;
+			key[31]=1;
+			key[30]=1;
+			key[27]=1;
+			key[20]=1;
+			key[15]=1;
+
+			digit=16;
 		}else {
-			System.out.println("生成多項式を作成します。(最大次数31");
+			System.out.println("生成多項式を作成します。(最高次数31)");
+			System.out.println("多項式を入力する際は、２進数ビット列とみなしてください（例： \"x^2+1\"の場合は\"101\"）");
 
-			do {
-				System.out.println("係数が1となるを次数を一つずつ順に入力してください。（例: \"x^2+1\"の場合は 0と2");
 
-				digit=scan2.nextInt();
-				while(digit<0||digit>31){
-					System.out.println("正しい数字を入力してください。");
-					digit=scan2.nextInt();
-				};
-				key[digit]=1;
+            do{
+            	System.out.println("値を入力してください。(値が正しくない場合は再度表示されます。)");
+                str= scan2.next();
+                chararray=str.toCharArray();
+                error=0;
 
-				System.out.println("まだ入力がが必要な場合は \"1\"を、入力を終えた場合は\"2\"を入力して下さい。");
-				flag3=scan2.nextInt();
-				while((flag3!=1)&&(flag3!=2)){
-					System.out.println("正しい数字を入力してください。");
-					flag3=scan2.nextInt();
-				};
+                for(int i=0;i<chararray.length;i++){
+                	if((chararray[i]!='0')&&(chararray[i]!='1')) {
+                		error=1;
+                		break;
+                	}
+                }
 
-			}while(flag3==1);
+            }while((str.length()==0)||(str.length()>32)||(error==1));
+
+            //int length=chararray.length;
+
+            for(int i=0;i<chararray.length;i++) {
+            	if(chararray[i]=='1') {
+            		key[32-chararray.length+i]=1;
+            	}
+            }
+
+            digit=chararray.length-1;
 
 		}
 
-		for(int j=31;j>=0;j--) {
+		for(int j=0;j<32;j++) {
 			System.out.printf(""+key[j]);
 		}
 		System.out.println();
@@ -55,16 +69,55 @@ class CRC{
 	}
 
 	public void calculate(int flag1) {
+		String str;
+		char []chararray=null;
+		int error=0;
+
+
 		if(flag1==1){
-			System.out.println("送信するデータを入力してください(最大10ビット)");
-			data=scan2.nextLong();
-			while((String.valueOf(data).length()>10));
-		}else {
+
+			for(int i=0;i<42;i++) {
+				sData[i]=0;
+			}
+
+			System.out.println("送信データを入力します。(最高ビット数10)");
+
+            do{
+            	System.out.println("値を入力してください。(値が正しくない場合は再度表示されます。)");
+                str= scan2.next();
+                chararray=str.toCharArray();
+                error=0;
+
+                for(int i=0;i<chararray.length;i++){
+                	if((chararray[i]!='0')&&(chararray[i]!='1')) {
+                		error=1;
+                		break;
+                	}
+                }
+
+            }while((str.length()==0)||(str.length()>10)||(error==1));
+
+            for(int i=0;i<chararray.length;i++) {
+            	if(chararray[i]=='1') {
+            		sData[42-digit-chararray.length+i]=1;
+            	}
+            }
+
+
+    		for(int j=0;j<42;j++) {
+    			System.out.printf(""+sData[j]);
+    		}
+    		System.out.println();
+
+    		//計算
+
+
+
+		}else{
 
 		}
 
 	}
-
 
 }
 
