@@ -168,14 +168,10 @@ class CRC{
     		}
 
 
-    		if(pos2!=(kl+sl)) {
-    			sData[(kl+sl)-digit+1]=r[kl-1];
-    		}else {
-    			for(int i=0;i<digit-1;i++) {
-        			sData[(kl+sl)-digit+i+1]=r[kl-digit+i+1];
-        		}
-    		}
-
+			for(int i=0;i<digit-1-(kl+sl-pos2);i++) {
+				sData[kl+sl-digit+i+1]=r[kl-digit+kl+sl-pos2+i+1];
+	    		//System.out.println("!");
+			}
 
 
     		for(int j=0;j<(kl+sl);j++) {
