@@ -1,347 +1,102 @@
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 class CRC{
-	public static final int kl=32;
-	public static final int sl=20;
 
 	int flag1;
 	int flag2;
 
-	//int key[]=new int[kl];
-	//int data[]=new int[kl+sl];
-
-	ArrayList<Integer> temp=new ArrayList<Integer>();
+	ArrayList<Integer> temp=new ArrayList<Integer>();//入力したデータ系列の一時保管用
 	ArrayList<Integer> key=new ArrayList<Integer>();
 	ArrayList<Integer> data=new ArrayList<Integer>();
-	//int rData[]=new int[kl+sl];
-
-	int dataDigit;
-	int pos1;
-	int pos2;
 
 	Scanner scan2=new Scanner(System.in);
 
 	CRC(int flag1,int flag2) {
-
 		this.flag1=flag1;
 		this.flag2=flag2;
-		/*for(int i=0;i<kl;i++) {
-			key[i]=0;
-		}*/
-
-		/*for(int i=0;i<(kl+sl);i++) {
-			data[i]=0;
-		}*/
 	}
 
-	/*public void createKey(int flag2) {
-		String str;
-		char []chararray=null;
-		int error=0;
-
-		if(flag2==1) {
-			key[31]=1;
-			key[30]=1;
-			key[27]=1;
-			key[20]=1;
-			key[15]=1;
-
-
-			setData(1,kl);
-
-			pos1=15;
-		}else {
-			System.out.println("生成多項式を作成します。(最高次数31)");
-			System.out.println("入力する際は、多項式を２進数ビット列とみなしてください（例： \"x^2+1\"の場合は\"101\"）");
-
-
-			setData(0,kl);
-
-            do{
-            	System.out.println("値を入力してください。(値が正しくない場合は再度表示されます。)");
-                str= scan2.next();
-                chararray=str.toCharArray();
-                error=0;
-
-                for(int i=0;i<chararray.length;i++){
-                	if((chararray[i]!='0')&&(chararray[i]!='1')) {
-                		error=1;
-                		break;
-                	}
-                }
-
-            }while((str.length()==0)||(str.length()>kl)||(error==1));
-
-            for(int i=0;i<chararray.length;i++) {
-            	if(chararray[i]=='1') {
-            		key[kl-chararray.length+i]=1;
-            	}
-            }
-
-            for(int i=0;i<kl;i++) {
-            	if(key[i]==1) {
-            		pos1=i;
-            		break;
-            	}
-            }
-
-		}
-
-		key=(ArrayList<Integer>) temp.clone();
-
-		temp.clear();
-
-		System.out.println(key.size());
-
-		for(int i=0;i<key.size();i++) {
-			System.out.printf(""+key.get(i));
-		}
-		System.out.println();
-	}*/
-
+	@SuppressWarnings("unchecked")
 	public void function() {
 
 		if(flag2==1) {
 
-			setData(1,kl);
+			setData(1);
 
-			//pos1=15;
 		}else {
-			System.out.println("生成多項式を作成します。(最高次数31)");
+			System.out.println("生成多項式を作成します。");
 			System.out.println("入力する際は、多項式を２進数ビット列とみなしてください（例： \"x^2+1\"の場合は\"101\"）");
 
-			setData(0,kl);
+			setData(0);
 		}
 
 		key=(ArrayList<Integer>) temp.clone();
-
 		temp.clear();
-
-		System.out.println(key.size());
-
-		for(int i=0;i<key.size();i++) {
-			System.out.printf(""+key.get(i));
-		}
-		System.out.println();
-		String str;
-		char []chararray=null;
-		int error=0;
-
-		//int []r=new int[kl+1];
-
-		int keyDigit;
-		int dataDigit;
 
 		if(flag1==1){
 
-			System.out.println("送信データを入力します。(最高ビット数20)");
+			System.out.println("送信データ系列を入力します。");
 
-			setData(0,sl);
+			setData(0);
 
 			data=(ArrayList<Integer>) temp.clone();
-
 			temp.clear();
-
-			System.out.println(data.size());
-
-			for(int i=0;i<data.size();i++) {
-				System.out.printf(""+data.get(i));
-			}
-			System.out.println();
-
-			//data.addAll(key);
 
 			for(int i=0;i<key.size()-1;i++) {
 				data.add(0);
 			}
 
-			System.out.println(data.size());
+			int r[]=calculate();
 
+			System.out.printf("[CRC] : ");
+			for(int i=1;i<key.size();i++) {
+				data.set((data.size()-key.size()+i),r[i]);
+				System.out.printf(""+data.get((data.size()-key.size()+i)));
+			}
+			System.out.println();
+
+			System.out.printf("[符号化送信データ系列] : ");
 			for(int i=0;i<data.size();i++) {
 				System.out.printf(""+data.get(i));
 			}
 			System.out.println();
+		}else{
+			System.out.println("受信データ系列を入力します。");
 
+			setData(0);
+
+			while(temp.size()<key.size()){
+				System.out.println("入力データ系列が生成多項式より短いため判定できません。");
+				temp.clear();
+				setData(0);
+			}
+
+			data=(ArrayList<Integer>) temp.clone();
+			temp.clear();
 
 			int r[]=calculate();
 
-			for(int i=1;i<key.size();i++) {
-				data.set((data.size()-key.size()+i),r[i]);
+			int ris0=1;//1:true,2:false
+
+			for(int i=0;i<key.size();i++) {
+				if(r[i]==1) {
+					ris0=0;
+					break;
+				}
 			}
 
-			for(int i=0;i<data.size();i++) {
-				System.out.printf(""+data.get(i));
-			}
-			System.out.println();
-
-            /*do{
-            	System.out.println("値を入力してください。(値が正しくない場合は再度表示されます。)");
-                str= scan2.next();
-                chararray=str.toCharArray();
-                error=0;
-
-                for(int i=0;i<chararray.length;i++){
-                	if((chararray[i]!='0')&&(chararray[i]!='1')) {
-                		error=1;
-                		break;
-                	}
-                }
-
-            }while((str.length()==0)||(str.length()>sl)||(error==1));
-
-            for(int i=0;i<chararray.length;i++) {
-            	if(chararray[i]=='1') {
-            		sData[sl+pos1+1-chararray.length+i]=1;
-            	}
-            }
-
-            for(int i=0;i<(kl+sl);i++) {
-            	if(sData[i]==1) {
-            		pos2=i;
-            		break;
-            	}
-            }
-
-            dataDigit=pos2;*/
-
-    		//計算
-
-    		/*int digit=kl-pos1;
-    		int pos3=kl;
-
-    		while(pos2+digit-(kl-pos3)<=(kl+sl)) {
-    			for(int i=0;i<digit;i++) {
-    				if((kl-pos3)>0) {
-    					r[pos1]=key[pos1]^r[pos3];
-    					pos1++;
-    					pos3++;
-    				}else {
-    					r[pos1]=key[pos1]^sData[pos2];
-    					pos1++;
-    					pos2++;
-    				}
-    			}
-
-    			pos1=kl-digit;
-    			pos3=kl;
-    			for(int i=0;i<digit;i++) {
-    				if(r[pos1+i]==1) {
-    					pos3=pos1+i;
-    					break;
-    				}
-    			}
-    		}
-
-			for(int i=0;i<digit-1-(kl+sl-pos2);i++) {
-				sData[kl+sl-digit+i+1]=r[kl-digit+kl+sl-pos2+i+1];
-			}
-
-    		System.out.printf("[送信データ]:");
-
-    		for(int i=dataDigit;i<(kl+sl);i++) {
-    			System.out.printf(""+sData[i]);
-    		}
-    		System.out.println();*/
-
-		}else{
-			/*for(int i=0;i<(kl+sl);i++) {
-				rData[i]=0;
-			}
-
-			System.out.println("受信データを入力します。(最高ビット数52)");
-
-            do{
-            	System.out.println("値を入力してください。(値が正しくない場合は再度表示されます。)");
-                str= scan2.next();
-                chararray=str.toCharArray();
-                error=0;
-
-                for(int i=0;i<chararray.length;i++){
-                	if((chararray[i]!='0')&&(chararray[i]!='1')) {
-                		error=1;
-                		break;
-                	}
-                }
-
-            }while((str.length()==0)||(str.length()>(kl+sl))||(error==1));
-
-            for(int i=0;i<chararray.length;i++) {
-            	if(chararray[i]=='1') {
-            		rData[kl+sl-chararray.length+i]=1;
-            	}
-            }
-
-            for(int i=0;i<(kl+sl);i++) {
-            	if(rData[i]==1) {
-            		pos2=i;
-            		break;
-            	}
-            }
-
-            //余り計算
-
-            int digit=kl-pos1;
-    		int pos3=kl;
-
-    		while(pos2+digit-(kl-pos3)<=(kl+sl)) {
-    			for(int i=0;i<digit;i++) {
-    				if((kl-pos3)>0) {
-    					r[pos1]=key[pos1]^r[pos3];
-    					pos1++;
-    					pos3++;
-    				}else {
-    					r[pos1]=key[pos1]^rData[pos2];
-    					pos1++;
-    					pos2++;
-    				}
-    			}
-
-
-    			pos1=kl-digit;
-    			pos3=kl;
-    			for(int i=0;i<digit;i++) {
-    				if(r[pos1+i]==1) {
-    					pos3=pos1+i;
-    					break;
-    				}
-    			}
-    		}
-
-            int ris0=0;//1:true 0:false
-
-            for(int i=0;i<digit-1;i++) {
-            	if(r[kl-digit+1+i]==1) {
-            		ris0=1;
-            		break;
-            	}
-            }
-
-
-            if(ris0==0) {
-	            while(pos2!=52) {
-	            	if(rData[pos2]==0) {
-	            		pos2++;
-	            	}else {
-	            		break;
-	            	}
-	            }
-            }
-
-    		if((pos2==52)&&(ris0==0)) {
+			if(ris0==1) {
     			System.out.println("誤りなし");
     		}else {
     			System.out.println("誤りあり");
-    		}*/
+    		}
 		}
 	}
 
-	private void setData(int d, int dataLength) {
+	private void setData(int d) {
 		String str;
 		char []chararray=null;
 		int error=0;
-
-		//int d[]=new int[kl+sl];
 
 		if(d==1){
 			str="10000100000010011";
@@ -353,15 +108,13 @@ class CRC{
 	            chararray=str.toCharArray();
 	            error=0;
 
-
 	            for(int i=0;i<chararray.length;i++){
 	            	if((chararray[i]!='0')&&(chararray[i]!='1')) {
 	            		error=1;
 	            		break;
 	            	}
 	            }
-
-	        }while((str.length()==0)||(str.length()>dataLength)||(error==1));
+	        }while((str.length()==0)||(error==1));
 		}
 
         for(int i=0;i<chararray.length;i++) {
@@ -372,19 +125,12 @@ class CRC{
         	}
         }
 
-        /*for(int i=0;i<dataLength;i++) {
-        	if(data.get(i)==1) {
-        		digit=dataLength-i;
-        		break;
-        	}
-        }*/
 	}
 
 
 	private int[] calculate() {
-		//int digit=kl-pos1;
-		int pos1=0;
-		int pos2=key.size();
+		int pos1=0;//次に演算で使用するのデータ系列の桁の位置
+		int pos2=key.size();//次の演算でデータ系列から何桁使用するかの指標
 
 		int[] r=new int[key.size()];
 
@@ -398,8 +144,6 @@ class CRC{
 					pos1++;
 				}
 			}
-
-			//pos1=kl-digit;
 			pos2=key.size();
 			for(int i=0;i<key.size();i++) {
 				if(r[i]==1) {
@@ -407,65 +151,23 @@ class CRC{
 					break;
 				}
 			}
-
-			System.out.println(pos1);
-			System.out.println(pos2);
-
-
-			for(int i=0;i<key.size();i++) {
-				System.out.printf(""+r[i]);
-			}
-			System.out.println();
 		}
 
-		if(pos1!=data.size()) {
+		if(pos1!=data.size()) {//勝の最後が0になってしまったとき
 			for(int j=0;j<(key.size()-(data.size()-pos1));j++) {
 				r[j]=r[j+data.size()-pos1];
 			}
-
-			for(int i=0;i<key.size();i++) {
-				System.out.printf(""+r[i]);
-			}
-			System.out.println();
 			for(int j=0;j<(data.size()-pos1);j++) {
 				r[(key.size()-(data.size()-pos1))+j]=data.get(pos2);
 				pos2++;
 			}
 		}
-
-		for(int i=0;i<key.size();i++) {
-			System.out.printf(""+r[i]);
-		}
-		System.out.println();
-
-		/*if(pos1<data.size()) {
-			for(int )
-
-			for(int i=key.size();i>0;i--) {
-				r[i-1]=data.get(data.size()-i);
-				pos1++;
-			}
-		}*/
-
-		/*for(int i=0;i<digit-1-(kl+sl-pos2);i++) {
-			sData[kl+sl-digit+i+1]=r[kl-digit+kl+sl-pos2+i+1];
-		}
-
-		System.out.printf("[送信データ]:");
-
-		for(int i=dataDigit;i<(kl+sl);i++) {
-			System.out.printf(""+sData[i]);
-		}
-		System.out.println();*/
-
 		return r;
 	}
 }
 
 public class prog1 {
-
 	public static void main(String[] args) {
-
 		int flag1;
 		int flag2;
 		String loop="0";
