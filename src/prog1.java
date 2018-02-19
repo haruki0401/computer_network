@@ -6,7 +6,7 @@ class CRC{
 
 	int key[]=new int[kl];
 	int sData[]=new int[kl+sl];
-	int rData[];
+	int rData[]=new int[kl+sl];
 	//int flag3;
 	int pos1;
 	int pos2;
@@ -181,6 +181,51 @@ class CRC{
 
 
 		}else{
+
+			for(int i=0;i<(kl+sl);i++) {
+				rData[i]=0;
+			}
+
+			System.out.println("受信データを入力します。(最高ビット数52)");
+
+            do{
+            	System.out.println("値を入力してください。(値が正しくない場合は再度表示されます。)");
+                str= scan2.next();
+                chararray=str.toCharArray();
+                error=0;
+
+                for(int i=0;i<chararray.length;i++){
+                	if((chararray[i]!='0')&&(chararray[i]!='1')) {
+                		error=1;
+                		break;
+                	}
+                }
+
+            }while((str.length()==0)||(str.length()>(kl+sl))||(error==1));
+
+            for(int i=0;i<chararray.length;i++) {
+            	if(chararray[i]=='1') {
+            		rData[kl+sl-chararray.length+i]=1;
+            	}
+            }
+
+
+    		for(int j=0;j<(kl+sl);j++) {
+    			System.out.printf(""+rData[j]);
+    		}
+    		System.out.println();
+
+            for(int i=0;i<(kl+sl);i++) {
+            	if(rData[i]==1) {
+            		pos2=i;
+            		break;
+            	}
+            }
+
+            System.out.println(pos2);
+
+
+
 
 		}
 
