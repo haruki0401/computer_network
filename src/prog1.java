@@ -131,7 +131,6 @@ class CRC{
 
 
     		//計算
-    		//r=key;
 
     		int digit=kl-pos1;
     		int pos3=kl;
@@ -222,9 +221,96 @@ class CRC{
             	}
             }
 
+
+            System.out.println(pos2);
+
+            //計算
+
+            int digit=kl-pos1;
+    		int pos3=kl;
+
+    		while(pos2+digit-(kl-pos3)<=(kl+sl)) {
+    			for(int i=0;i<digit;i++) {
+    				if((kl-pos3)>0) {
+    					r[pos1]=key[pos1]^r[pos3];
+    					pos1++;
+    					pos3++;
+    				}else {
+    					r[pos1]=key[pos1]^rData[pos2];
+    					pos1++;
+    					pos2++;
+    				}
+    			}
+
+
+    			pos1=kl-digit;
+    			pos3=kl;
+    			for(int i=0;i<digit;i++) {
+    				if(r[pos1+i]==1) {
+    					pos3=pos1+i;
+    					break;
+    				}
+    			}
+
+
+    			for(int j=0;j<kl;j++) {
+        			System.out.printf(""+r[j]);
+        		}
+        		System.out.println();
+
+    		}
+
             System.out.println(pos2);
 
 
+            int ris0=0;//1:true 0:false
+
+            for(int i=0;i<digit-1;i++) {
+            	if(r[kl-digit+1+i]==1) {
+            		ris0=1;
+            		break;
+            	}
+            }
+
+
+            if(ris0==0) {
+	            while(pos2!=52) {
+	            	if(rData[pos2]==0) {
+	            		pos2++;
+	            	}else {
+	            		break;
+	            	}
+	            }
+            }
+
+
+
+    		for(int j=0;j<kl;j++) {
+    			System.out.printf(""+r[j]);
+    		}
+    		System.out.println();
+
+
+
+    		if((pos2==52)&&(ris0==0)) {
+    			System.out.println("誤りなし");
+    		}else {
+    			System.out.println("誤りあり");
+    		}
+
+    		System.out.println(digit);
+
+
+			/*for(int i=0;i<digit-1-(kl+sl-pos2);i++) {
+				sData[kl+sl-digit+i+1]=r[kl-digit+kl+sl-pos2+i+1];
+	    		//System.out.println("!");
+			}*/
+
+
+    		/*for(int j=0;j<(kl+sl);j++) {
+    			System.out.printf(""+sData[j]);
+    		}*/
+    		System.out.println();
 
 
 		}
