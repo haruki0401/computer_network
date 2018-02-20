@@ -163,6 +163,11 @@ class CRC{
 			}
 		}
 
+		for(int i=0;i<key.size();i++) {
+			System.out.printf(""+r[i]);
+		}
+		System.out.println();
+
 		return r;
 	}
 }
