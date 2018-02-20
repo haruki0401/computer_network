@@ -153,7 +153,7 @@ class CRC{
 			}
 		}
 
-		if(pos1!=data.size()) {//勝の最後が0になってしまったとき
+		if(pos1!=data.size()) {//商の最後が0になってしまったとき
 			for(int j=0;j<(key.size()-(data.size()-pos1));j++) {
 				r[j]=r[j+data.size()-pos1];
 			}
