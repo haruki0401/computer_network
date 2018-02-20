@@ -158,10 +158,11 @@ class CRC{
 				r[j]=r[j+data.size()-pos1];
 			}
 			for(int j=0;j<(data.size()-pos1);j++) {
-				r[(key.size()-(data.size()-pos1))+j]=data.get(pos2);
+				r[(key.size()-(data.size()-pos1))+j]=data.get(pos1);
 				pos2++;
 			}
 		}
+
 		return r;
 	}
 }
